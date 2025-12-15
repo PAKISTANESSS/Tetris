@@ -12,7 +12,7 @@ export class AudioManager {
         try {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         } catch (e) {
-            console.warn('Web Audio API not supported');
+            // Web Audio API not supported
         }
     }
     

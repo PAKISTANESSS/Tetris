@@ -18,12 +18,6 @@ export class Renderer {
         });
         if (!this.gl) throw new Error('WebGL not supported');
         
-        console.log('WebGL context created:', {
-            version: this.gl.getParameter(this.gl.VERSION),
-            vendor: this.gl.getParameter(this.gl.VENDOR),
-            renderer: this.gl.getParameter(this.gl.RENDERER)
-        });
-        
         this.virtualWidth = width;
         this.virtualHeight = height;
         this.setupCanvas();
@@ -41,13 +35,6 @@ export class Renderer {
         
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
         this.projectionMatrix = this.ortho(0, this.virtualWidth, this.virtualHeight, 0, -1, 1);
-        
-        console.log('Canvas setup:', {
-            styleSize: `${this.virtualWidth}x${this.virtualHeight}`,
-            actualSize: `${this.canvas.width}x${this.canvas.height}`,
-            viewport: `${this.canvas.width}x${this.canvas.height}`,
-            dpr: dpr
-        });
     }
     
     ortho(l, r, b, t, n, f) {
@@ -123,15 +110,8 @@ export class Renderer {
         this.gl.shaderSource(shader, source);
         this.gl.compileShader(shader);
         if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
-            const info = this.gl.getShaderInfoLog(shader);
-            console.error('Shader compilation error:', info);
-            console.error('Shader source:', source.substring(0, 200));
             this.gl.deleteShader(shader);
             return null;
-        }
-        const info = this.gl.getShaderInfoLog(shader);
-        if (info) {
-            console.warn('Shader info:', info);
         }
         return shader;
     }
@@ -142,16 +122,10 @@ export class Renderer {
         this.gl.attachShader(program, fs);
         this.gl.linkProgram(program);
         if (!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
-            const info = this.gl.getProgramInfoLog(program);
-            console.error('Program link error:', info);
             this.gl.deleteProgram(program);
             return null;
         }
         this.gl.validateProgram(program);
-        if (!this.gl.getProgramParameter(program, this.gl.VALIDATE_STATUS)) {
-            const info = this.gl.getProgramInfoLog(program);
-            console.error('Program validation error:', info);
-        }
         return program;
     }
     
@@ -175,13 +149,6 @@ export class Renderer {
         this.uAlpha = this.gl.getUniformLocation(this.program, 'u_alpha');
         this.uGlow = this.gl.getUniformLocation(this.program, 'u_glow');
         this.uOutline = this.gl.getUniformLocation(this.program, 'u_outline');
-        
-        if (this.aPos === -1 || this.aTex === -1) {
-            console.error('Failed to get attribute locations - aPos:', this.aPos, 'aTex:', this.aTex);
-        }
-        if (!this.uProjection || !this.uTransform || !this.uColor || !this.uAlpha) {
-            console.error('Failed to get uniform locations');
-        }
     }
     
     clear() {
@@ -192,7 +159,6 @@ export class Renderer {
     
     drawBlock(x, y, color, alpha = 1.0, glow = 0.0) {
         if (this.aPos === -1 || this.aTex === -1 || !this.program) {
-            console.error('drawBlock: Invalid program or attributes', { aPos: this.aPos, aTex: this.aTex, program: !!this.program });
             return;
         }
         
@@ -219,7 +185,6 @@ export class Renderer {
         ]);
         
         if (!this.uProjection || !this.uTransform || !this.uColor) {
-            console.error('drawBlock: Missing uniform locations');
             return;
         }
         
@@ -231,11 +196,6 @@ export class Renderer {
         this.gl.uniform1f(this.uOutline, 0.05);
         
         this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
-        
-        const error = this.gl.getError();
-        if (error !== this.gl.NO_ERROR && error !== 0) {
-            console.error('WebGL error in drawBlock:', error, 'at', x, y);
-        }
     }
     
     drawBoard(board, clearedLines = []) {

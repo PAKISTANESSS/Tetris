@@ -47,13 +47,6 @@ export class Game {
             this.spawnPiece();
         }
         
-        console.log('WebGL setup check:');
-        console.log('- Program:', this.renderer.program ? 'OK' : 'FAILED');
-        console.log('- aPos:', this.renderer.aPos);
-        console.log('- aTex:', this.renderer.aTex);
-        console.log('- Canvas size:', this.canvas.width, 'x', this.canvas.height);
-        console.log('- Virtual size:', VIRTUAL_WIDTH, 'x', VIRTUAL_HEIGHT);
-        
         this.gameLoop();
     }
     
@@ -317,7 +310,6 @@ export class Game {
     hideOverlay() {
         const overlay = document.getElementById('gameOverlay');
         overlay.classList.add('hidden');
-        console.log('Overlay hidden, game state:', this.gameState);
     }
     
     gameLoop() {
