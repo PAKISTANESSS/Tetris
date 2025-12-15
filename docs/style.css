@@ -40,9 +40,10 @@ body, canvas {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding-top: 80px;
+    padding-top: 100px;
     padding-bottom: 60px;
     box-sizing: border-box;
+    margin-top: 0;
 }
 
 /* ============================================
@@ -57,7 +58,9 @@ body, canvas {
     box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
     background: #000;
     max-width: 100%;
-    max-height: calc(100vh - 160px);
+    max-height: calc(100vh - 180px);
+    position: relative;
+    z-index: 1;
 }
 
 #nextCanvas {

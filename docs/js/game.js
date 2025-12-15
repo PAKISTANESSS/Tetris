@@ -165,6 +165,8 @@ export class Game {
                 this.clearedLines = [];
                 this.clearedLinesData = null;
                 this.clearAnimationTime = 0;
+                // Spawn new piece after animation completes
+                this.spawnPiece();
             }
             return;
         }
@@ -190,10 +192,14 @@ export class Game {
         }
         
         if (linesToClear.length > 0) {
+            // Sort in descending order to avoid index shifting issues when removing multiple lines
+            linesToClear.sort((a, b) => b - a);
+            
             this.clearedLines = linesToClear;
             this.clearedLinesData = linesToClear.map(y => [...this.board.grid[y]]);
             this.clearAnimationTime = 0;
             
+            // Clear all lines at once (from top to bottom to avoid index shifting)
             for (const line of linesToClear) {
                 this.board.grid.splice(line, 1);
                 this.board.grid.unshift(Array(BOARD_WIDTH).fill(0));
@@ -210,6 +216,8 @@ export class Game {
             this.audioManager.playLineClear(linesToClear.length);
             this.hapticsManager.lineClear(linesToClear.length);
             this.updateHUD();
+            // Don't spawn new piece yet - wait for animation to complete
+            return;
         }
         this.spawnPiece();
     }
