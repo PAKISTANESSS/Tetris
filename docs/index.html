@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris - WebGL</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <canvas id="gameCanvas"></canvas>
+        
+        <!-- HUD Overlay -->
+        <div class="hud">
+            <div class="hud-panel">
+                <div class="hud-section">
+                    <div class="hud-label">SCORE</div>
+                    <div class="hud-value" id="score">0</div>
+                </div>
+                <div class="hud-section">
+                    <div class="hud-label">LEVEL</div>
+                    <div class="hud-value" id="level">1</div>
+                </div>
+                <div class="hud-section">
+                    <div class="hud-label">LINES</div>
+                    <div class="hud-value" id="lines">0</div>
+                </div>
+            </div>
+            
+            <div class="next-piece-container">
+                <div class="hud-label">NEXT</div>
+                <canvas id="nextCanvas"></canvas>
+            </div>
+        </div>
+        
+        <!-- Game Overlay -->
+        <div class="overlay" id="gameOverlay">
+            <div class="overlay-content">
+                <h1 id="overlayTitle">TETRIS</h1>
+                <p id="overlayMessage">Press SPACE or click to start</p>
+                <div class="controls-hint">
+                    <div>A/D or ←/→ Move</div>
+                    <div>↓ Soft Drop</div>
+                    <div>SPACE Hard Drop</div>
+                    <div>P Pause</div>
+                    <div>M Mute</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mute Button -->
+        <button id="muteBtn" class="mute-btn" aria-label="Toggle mute">🔊</button>
+    </div>
+    
+    <footer class="footer">
+        <div class="footer-content">
+            <span>&copy; <span id="currentYear"></span></span>
+            <span>Created by <a href="https://github.com/PAKISTANESSS" target="_blank" rel="noopener noreferrer">PAKISTANESSS</a></span>
+        </div>
+    </footer>
+    
+    <script type="module" src="js/main.js"></script>
+    <script>
+        // Set current year
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
+
