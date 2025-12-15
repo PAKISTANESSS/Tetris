@@ -456,10 +456,8 @@ class BagRandomizer {
 
 class InputManager {
     constructor() {
-        this.keys = new Map();
-        this.repeatTimers = new Map();
-        this.repeatDelay = 150;
-        this.repeatInterval = 50;
+        this.keys = new Map(); // Currently pressed keys
+        this.justPressed = new Map(); // Keys that were just pressed (reset after being read)
         this.setupEventListeners();
     }
     
@@ -467,8 +465,9 @@ class InputManager {
         window.addEventListener('keydown', (e) => {
             const key = this.normalizeKey(e.key);
             if (key && !this.keys.has(key)) {
+                // Key was just pressed (not held)
                 this.keys.set(key, true);
-                this.startRepeat(key);
+                this.justPressed.set(key, true);
             }
             if (['ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp', ' '].includes(e.key)) {
                 e.preventDefault();
@@ -478,7 +477,7 @@ class InputManager {
             const key = this.normalizeKey(e.key);
             if (key) {
                 this.keys.delete(key);
-                this.stopRepeat(key);
+                this.justPressed.delete(key);
             }
         });
     }
@@ -496,31 +495,18 @@ class InputManager {
         return map[key];
     }
     
-    startRepeat(key) {
-        if (this.repeatTimers.has(key)) clearTimeout(this.repeatTimers.get(key));
-        const timer = setTimeout(() => {
-            const interval = setInterval(() => {
-                if (!this.keys.has(key)) {
-                    clearInterval(interval);
-                    this.repeatTimers.delete(key);
-                }
-            }, this.repeatInterval);
-            this.repeatTimers.set(key, interval);
-        }, this.repeatDelay);
-        this.repeatTimers.set(key, timer);
-    }
-    
-    stopRepeat(key) {
-        const timer = this.repeatTimers.get(key);
-        if (timer) {
-            clearTimeout(timer);
-            clearInterval(timer);
-            this.repeatTimers.delete(key);
-        }
-    }
-    
+    // Check if key is currently held down
     isPressed(key) {
         return this.keys.has(key);
+    }
+    
+    // Check if key was just pressed (only true once per press, until released)
+    isJustPressed(key) {
+        if (this.justPressed.has(key)) {
+            this.justPressed.delete(key); // Consume the "just pressed" state
+            return true;
+        }
+        return false;
     }
 }
 
@@ -622,8 +608,6 @@ class Game {
         this.clearedLines = [];
         this.clearedLinesData = null;
         this.clearAnimationTime = 0;
-        this.mutePressed = false;
-        this.startPressed = false; // Prevent multiple rapid starts
         this.setupUI();
         // Initialize next piece for preview (even in menu)
         this.nextPiece = new Piece(this.randomizer.next());
@@ -658,11 +642,7 @@ class Game {
             clickTimeout = setTimeout(() => { clickTimeout = null; }, 300);
             
             if (this.gameState === 'menu' || this.gameState === 'gameover') {
-                if (!this.startPressed) {
-                    this.startPressed = true;
-                    this.startGame();
-                    setTimeout(() => { this.startPressed = false; }, 500);
-                }
+                this.startGame();
             } else if (this.gameState === 'paused') {
                 this.resumeGame();
             }
@@ -687,46 +667,40 @@ class Game {
     }
     
     handleInput() {
-        if (this.inputManager.isPressed('mute') && !this.mutePressed) {
-            this.mutePressed = true;
+        if (this.inputManager.isJustPressed('mute')) {
             const muted = this.audioManager.toggleMute();
             document.getElementById('muteBtn').textContent = muted ? '🔇' : '🔊';
             document.getElementById('muteBtn').classList.toggle('muted', muted);
-        } else if (!this.inputManager.isPressed('mute')) {
-            this.mutePressed = false;
         }
         
         if (this.gameState !== 'playing') {
-            const spacePressed = this.inputManager.isPressed('space');
-            if (spacePressed && !this.startPressed) {
-                this.startPressed = true;
+            if (this.inputManager.isJustPressed('space')) {
                 if (this.gameState === 'menu' || this.gameState === 'gameover') {
                     this.startGame();
                 }
-            } else if (!spacePressed) {
-                this.startPressed = false;
             }
             
-            if (this.inputManager.isPressed('pause') && this.gameState === 'paused') {
+            if (this.inputManager.isJustPressed('pause') && this.gameState === 'paused') {
                 this.resumeGame();
                 return;
             }
             return;
         }
         
-        if (this.inputManager.isPressed('left')) {
+        // Use isJustPressed for all actions - each key press only triggers once
+        if (this.inputManager.isJustPressed('left')) {
             if (this.board.isValidPosition(this.currentPiece, this.pieceX - 1, this.pieceY)) {
                 this.pieceX--;
                 this.audioManager.playMove();
             }
         }
-        if (this.inputManager.isPressed('right')) {
+        if (this.inputManager.isJustPressed('right')) {
             if (this.board.isValidPosition(this.currentPiece, this.pieceX + 1, this.pieceY)) {
                 this.pieceX++;
                 this.audioManager.playMove();
             }
         }
-        if (this.inputManager.isPressed('rotate')) {
+        if (this.inputManager.isJustPressed('rotate')) {
             const result = this.currentPiece.rotate(1, this.board, this.pieceX, this.pieceY);
             if (result.success) {
                 this.pieceX = result.x;
@@ -734,14 +708,14 @@ class Game {
                 this.audioManager.playRotate();
             }
         }
-        if (this.inputManager.isPressed('down')) {
+        if (this.inputManager.isJustPressed('down')) {
             if (this.board.isValidPosition(this.currentPiece, this.pieceX, this.pieceY + 1)) {
                 this.pieceY++;
                 this.score += SCORE_VALUES.SOFT_DROP;
                 this.updateHUD();
             }
         }
-        if (this.inputManager.isPressed('space')) {
+        if (this.inputManager.isJustPressed('space')) {
             const dropY = this.board.getGhostY(this.currentPiece, this.pieceX, this.pieceY);
             const dropDistance = dropY - this.pieceY;
             this.pieceY = dropY;
@@ -750,7 +724,7 @@ class Game {
             this.audioManager.playHardDrop();
             this.hapticsManager.hardDrop();
         }
-        if (this.inputManager.isPressed('pause')) {
+        if (this.inputManager.isJustPressed('pause')) {
             this.pauseGame();
         }
     }
