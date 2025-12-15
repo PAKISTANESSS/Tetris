@@ -58,10 +58,16 @@ export class Game {
     }
     
     setupUI() {
-        document.getElementById('muteBtn').addEventListener('click', () => {
+        // Initialize mute button state from saved preference
+        const initialMuted = this.audioManager.isMuted();
+        const muteBtn = document.getElementById('muteBtn');
+        muteBtn.textContent = initialMuted ? '🔇' : '🔊';
+        muteBtn.classList.toggle('muted', initialMuted);
+        
+        muteBtn.addEventListener('click', () => {
             const muted = this.audioManager.toggleMute();
-            document.getElementById('muteBtn').textContent = muted ? '🔇' : '🔊';
-            document.getElementById('muteBtn').classList.toggle('muted', muted);
+            muteBtn.textContent = muted ? '🔇' : '🔊';
+            muteBtn.classList.toggle('muted', muted);
         });
         
         const overlay = document.getElementById('gameOverlay');

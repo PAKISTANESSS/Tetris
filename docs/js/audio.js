@@ -1,11 +1,14 @@
 /**
  * Audio Manager
  * Handles procedural sound effects using Web Audio API
+ * Persists mute state in localStorage
  */
 export class AudioManager {
     constructor() {
         this.audioContext = null;
-        this.muted = false;
+        // Load mute state from localStorage (default to false if not set)
+        const savedMuteState = localStorage.getItem('tetris_muted');
+        this.muted = savedMuteState === 'true';
         try {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         } catch (e) {
@@ -15,6 +18,12 @@ export class AudioManager {
     
     toggleMute() {
         this.muted = !this.muted;
+        // Save mute state to localStorage
+        localStorage.setItem('tetris_muted', this.muted.toString());
+        return this.muted;
+    }
+    
+    isMuted() {
         return this.muted;
     }
     
