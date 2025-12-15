@@ -1,3 +1,6 @@
+/* ============================================
+   RESET & BASE STYLES
+   ============================================ */
 * {
     margin: 0;
     padding: 0;
@@ -16,6 +19,19 @@ body {
     width: 100vw;
 }
 
+/* Prevent text selection and scrolling */
+body, canvas {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* ============================================
+   GAME CONTAINER
+   ============================================ */
 .game-container {
     position: relative;
     width: 100%;
@@ -29,6 +45,9 @@ body {
     box-sizing: border-box;
 }
 
+/* ============================================
+   CANVAS STYLES
+   ============================================ */
 #gameCanvas {
     display: block;
     image-rendering: pixelated;
@@ -48,8 +67,15 @@ body {
     image-rendering: crisp-edges;
     background: #000;
     border: 1px solid #00ff88;
+    width: 80px;
+    height: 80px;
+    min-width: 80px;
+    min-height: 80px;
 }
 
+/* ============================================
+   HUD (Heads-Up Display)
+   ============================================ */
 .hud {
     position: fixed;
     top: 0;
@@ -108,13 +134,9 @@ body {
     flex-shrink: 0;
 }
 
-#nextCanvas {
-    width: 80px;
-    height: 80px;
-    min-width: 80px;
-    min-height: 80px;
-}
-
+/* ============================================
+   OVERLAY (Menu, Pause, Game Over)
+   ============================================ */
 .overlay {
     position: absolute;
     top: 0;
@@ -171,6 +193,9 @@ body {
     border-bottom: 1px solid rgba(0, 255, 136, 0.2);
 }
 
+/* ============================================
+   MUTE BUTTON
+   ============================================ */
 .mute-btn {
     position: fixed;
     top: 12px;
@@ -198,6 +223,9 @@ body {
     opacity: 0.5;
 }
 
+/* ============================================
+   FOOTER
+   ============================================ */
 .footer {
     position: fixed;
     bottom: 0;
@@ -234,17 +262,9 @@ body {
     text-decoration: underline;
 }
 
-/* Prevent text selection and scrolling */
-body, canvas {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    -webkit-touch-callout: none;
-    -webkit-tap-highlight-color: transparent;
-}
-
-/* Mobile responsive */
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
 @media (max-width: 768px) {
     body {
         padding-top: 120px;
@@ -278,4 +298,3 @@ body, canvas {
         gap: 5px;
     }
 }
-
