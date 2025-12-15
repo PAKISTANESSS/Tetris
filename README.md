@@ -16,7 +16,7 @@ A modern Tetris game built with WebGL, featuring pixel-art visuals, smooth anima
 ## Controls
 
 - **A/D** or **←/→** - Move left/right
-- **↓** - Soft drop
+- **S** or **↓** - Soft drop
 - **SPACE** - Hard drop
 - **W** or **↑** - Rotate
 - **P** - Pause

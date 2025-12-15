@@ -33,7 +33,7 @@ export class InputManager {
         const map = {
             'ArrowLeft': 'left', 'a': 'left', 'A': 'left',
             'ArrowRight': 'right', 'd': 'right', 'D': 'right',
-            'ArrowDown': 'down',
+            'ArrowDown': 'down', 's': 'down', 'S': 'down',
             ' ': 'space',
             'ArrowUp': 'rotate', 'w': 'rotate', 'W': 'rotate',
             'p': 'pause', 'P': 'pause',
